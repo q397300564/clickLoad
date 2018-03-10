@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Click-load</title>
+</head>
+
+<body>
+    <button id="btn"> 点我 </button>
+    <div id="content"></div>
+
+    <script>
+        var isload = false;
+        var page = 1;
+
+        btn.onclick = function () {
+            if (isload) {
+                return;
+            }
+            isload = true;
+            var xhr = new XMLHttpRequest();
+            xhr.open('Get', './page'+ page +'.json');
+            xhr.onreadystatechange = function() {
+                if(xhr.readyState === 4) {
+                    if((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
+                        isload = false;
+                        var obj = JSON.parse(xhr.responseText);
+                        console.log(obj);
+                        if (obj.next_load === true) {
+                            page += 1;
+                            
+                        } else {
+                            btn.disabled = true;
+                        }
+                    }else {
+                        isload = false;
+                        console.log('服务器');
+                    }
+                }
+            }
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>
